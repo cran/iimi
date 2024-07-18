@@ -6,6 +6,7 @@
 #' @importFrom mltools sparsify
 #' @importFrom data.table data.table
 #' @importFrom dplyr %>% summarise group_by
+#' @importFrom xgboost xgb.load.raw
 #'
 #' @examples
 #'
@@ -45,7 +46,7 @@ predict_iimi <-
       } else {
         model = trained_model
       }
-      prediction = predict(newdata = newdata[,-c(1:4)],
+      prediction = predict(newdata = newdata[, -c(1:4)],
                            model,
                            importance = T,
                            type = "prob")
@@ -60,22 +61,23 @@ predict_iimi <-
       )
       if (report_virus_level) {
         result_df <- result_df %>% group_by(Sample_ID, Virus_name) %>%
-        summarise(
-          Virus_name = dplyr::first(Virus_name),
-          Segment_ID = dplyr::first(Segment_ID),
-          Isolate_ID = dplyr::first(Isolate_ID),
-          Prediction = any(as.logical(Prediction))
-        )
+          summarise(
+            Virus_name = dplyr::first(Virus_name),
+            Segment_ID = dplyr::first(Segment_ID),
+            Isolate_ID = dplyr::first(Isolate_ID),
+            Prediction = any(as.logical(Prediction))
+          )
       }
 
 
     }
 
     if (method == "xgb") {
-      test = sparsify(data.table(newdata[,-c(1:4)]))
+      test = sparsify(data.table(newdata[, -c(1:4)]))
 
       if (missing(trained_model)) {
-        model = trained_xgb
+        # model = trained_xgb
+        model = xgb.load.raw(trained_xgb$xgb_model_bytes)
       } else {
         model = trained_model
       }
@@ -102,9 +104,9 @@ predict_iimi <-
     }
 
     if (method == "en") {
-      xx.test = cbind(rep(1, nrow(newdata)), newdata[,-c(1:4)])
+      xx.test = cbind(rep(1, nrow(newdata)), newdata[, -c(1:4)])
       colnames(xx.test)[1] = "labels"
-      test = model.matrix(labels ~ ., xx.test)
+      test = model.matrix(labels ~ ., xx.test)[,-1]
 
       if (missing(trained_model)) {
         model = trained_en
@@ -125,6 +127,7 @@ predict_iimi <-
         Prediction = prediction > 0.5,
         Probability = prediction
       )
+      colnames(result_df)[5:6] = c("Prediction", "Probability")
       if (report_virus_level) {
         result_df <- result_df %>% group_by(Sample_ID, Virus_name) %>%
           summarise(

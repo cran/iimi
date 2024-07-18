@@ -6,6 +6,7 @@
 #' @importFrom GenomicAlignments readGAlignmentPairs
 #' @importFrom IRanges coverage
 #' @importFrom stats setNames
+#' @importFrom Rdpack reprompt
 #'
 #'
 #' @examples

@@ -12,7 +12,6 @@
 
 <meta name="author" content="Haochen Ning" />
 
-<meta name="date" content="2023-04-29" />
 
 <title>Introduction to the iimi package</title>
 
@@ -146,6 +145,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
 
 <style type="text/css">body {
 background-color: #fff;
@@ -341,90 +362,317 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Introduction to the iimi package</h1>
 <h4 class="author">Haochen Ning</h4>
-<h4 class="date">2023-04-29</h4>
+<h4 class="date">First created on 2023-04-29. Updated on 2024-07-17</h4>
 
 
 <div id="TOC">
 <ul>
-<li><a href="#introduction" id="toc-introduction">Introduction</a></li>
-<li><a href="#converting-bam-files-into-coverage-profiles-and-feature-extracted-data-frame" id="toc-converting-bam-files-into-coverage-profiles-and-feature-extracted-data-frame">Converting
-BAM file(s) into coverage profiles and feature-extracted data
-frame</a></li>
-<li><a href="#visualizing-the-coverage-profiles" id="toc-visualizing-the-coverage-profiles">Visualizing the coverage
+<li><a href="#introduction" id="toc-introduction">1. Introduction</a>
+<ul>
+<li><a href="#installation" id="toc-installation">1.1.
+Installation</a></li>
+<li><a href="#loading-packages" id="toc-loading-packages">1.2. Loading
+packages</a></li>
+<li><a href="#pre-processing" id="toc-pre-processing">1.3.
+Pre-processing</a></li>
+<li><a href="#downloading-example-bam-files" id="toc-downloading-example-bam-files">1.4. Downloading example BAM
+files</a></li>
+</ul></li>
+<li><a href="#converting-bam-files-into-coverage-profiles-and-feature-extracted-data-frame" id="toc-converting-bam-files-into-coverage-profiles-and-feature-extracted-data-frame">2.
+Converting BAM file(s) into coverage profiles and feature-extracted data
+frame</a>
+<ul>
+<li><a href="#state-the-path-to-the-folder-of-your-bam-files" id="toc-state-the-path-to-the-folder-of-your-bam-files">2.1. State the
+path to the folder of your BAM files</a></li>
+<li><a href="#create-a-data-frame-that-contains-the-coverage-profiles." id="toc-create-a-data-frame-that-contains-the-coverage-profiles.">2.2.
+Create a data frame that contains the coverage profiles.</a></li>
+</ul></li>
+<li><a href="#predicting-the-plant-samples" id="toc-predicting-the-plant-samples">3. Predicting the plant
+sample(s)</a>
+<ul>
+<li><a href="#using-pre-trained-models-and-no-customization" id="toc-using-pre-trained-models-and-no-customization">3.1 Using
+pre-trained models and no customization</a></li>
+<li><a href="#customizing-your-own-model" id="toc-customizing-your-own-model">3.2. Customizing your own
+model</a></li>
+<li><a href="#customizing-unreliable-regions" id="toc-customizing-unreliable-regions">3.3. Customizing unreliable
+regions</a></li>
+</ul></li>
+<li><a href="#visualizing-the-coverage-profiles" id="toc-visualizing-the-coverage-profiles">4. Visualizing the coverage
 profiles</a></li>
-<li><a href="#predicting-the-plant-samples" id="toc-predicting-the-plant-samples">Predicting the plant
-sample(s)</a></li>
-<li><a href="#training-your-own-model" id="toc-training-your-own-model">Training your own model</a></li>
-<li><a href="#creating-mappability-profile-and-nucleotide-filtering-data-frame" id="toc-creating-mappability-profile-and-nucleotide-filtering-data-frame">Creating
-mappability profile and nucleotide filtering data frame</a></li>
+<li><a href="#references" id="toc-references">5. References</a></li>
 </ul>
 </div>
 
 <div id="introduction" class="section level2">
-<h2>Introduction</h2>
+<h2>1. Introduction</h2>
 <p>This vignette aims to give an introduction on how to use the
 <code>iimi</code> package for plant virus diagnostics and how to
 visualize the coverage profile for the sample mapping. We also included
 a tutorial on creating unreliable regions.</p>
-<p>First, we will load necessary packages before we start any
-analysis.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(iimi)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Biostrings)</span></code></pre></div>
-<p>Note that we need sample mapping results to get started creating
-coverage profiles and feature-extracted data frame. We used Bowtie 2 to
-map the samples against the <a href="https://github.com/virtool/ref-plant-viruses">official Virtool
-virus data base</a>. You can choose from Bowtie 2 or minimap2 since we
-have tried both and they yield similar result with minimap2 having a
+<div id="installation" class="section level3">
+<h3>1.1. Installation</h3>
+<p>First, let’s install necessary packages. You may skip this step if
+you have installed the packages before.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install iimi</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">&quot;iimi&quot;</span>, <span class="st">&quot;httr&quot;</span>))</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># install Biostrings</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">&quot;BiocManager&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">install.packages</span>(<span class="st">&quot;BiocManager&quot;</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">&quot;Biostrings&quot;</span>)</span></code></pre></div>
+</div>
+<div id="loading-packages" class="section level3">
+<h3>1.2. Loading packages</h3>
+<p>We will load necessary packages before we start any analysis.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(iimi)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Biostrings)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(httr)</span></code></pre></div>
+</div>
+<div id="pre-processing" class="section level3">
+<h3>1.3. Pre-processing</h3>
+<p>To get started creating coverage profiles and feature-extracted data
+frames, we need mapping results. We used Bowtie2 to map the samples
+(paired-end or single-end) against the <a href="https://github.com/virtool/ref-plant-viruses">official Virtool
+virus data base (ver. 1.4.0)</a>. We recommend Bowtie2 or minimap2 since
+we have tried both and they yield similar result with minimap2 having a
 slight decrease. We let both software to report all alignments
-(<code>-a</code> mode for Bowtie 2, <code>--secondary=yes</code> for
-minimap2).</p>
+(<code>-a</code> mode for Bowtie2, <code>--secondary=yes</code> for
+minimap2). You can also use other mapping tools. Make sure that you
+convert your mapping results to indexed and sorted BAM files using
+Samtools.</p>
+</div>
+<div id="downloading-example-bam-files" class="section level3">
+<h3>1.4. Downloading example BAM files</h3>
+<p>We provide three example BAM files to demonstrate how to use iimi.
+These files are sourced from the dataset used in the VirHunter paper
+<span class="citation">(Sukhorukov et al. 2022)</span>, which we also
+utilized for external validation in our manuscript <span class="citation">(Ning et al. 2024)</span>. You can download these files
+directly from the Recherche Data Gouv website <span class="citation">(Candresse, Marais-Colombel, and Brault 2022)</span>.
+We recommend storing all BAM files in a single folder for ease of
+access. Here, we provide a short tutorial to guide you through using
+iimi functions to make predictions on the real data.</p>
+</div>
 </div>
 <div id="converting-bam-files-into-coverage-profiles-and-feature-extracted-data-frame" class="section level2">
-<h2>Converting BAM file(s) into coverage profiles and feature-extracted
-data frame</h2>
-<p>First, we convert the BAM file(s) into coverage profiles and
-feature-extracted data frame.</p>
+<h2>2. Converting BAM file(s) into coverage profiles and
+feature-extracted data frame</h2>
+<p>Let’s convert the indexed and sorted BAM file(s) into coverage
+profiles and feature-extracted data frame.</p>
 <p>We will use the coverage profiles to visualize the mapping
 information. The feature-extracted data frame will be used in the model
 training and testing process.</p>
-<p>Note that both training and testing data need to go through the
-conversion step. In our example, we stored the conversion for both the
-testing and training datasets in the same object. You can do the
-conversion separately for your data.</p>
-<p><strong>Important: the example code does not work unless your own
-path to the folder that stores your BAM files is provided.</strong></p>
-<ol style="list-style-type: decimal">
-<li>State the path to the folder of your BAM files. If you already have
-coverage profiles in run-length encoding (RLE) format, go to step
-2.2.</li>
-</ol>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>   path_to_bamfiles <span class="ot">&lt;-</span> <span class="fu">list.files</span>(</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">path =</span> path<span class="sc">/</span>to<span class="sc">/</span>your<span class="sc">/</span>BAM<span class="sc">/</span>files<span class="sc">/</span>folder,</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">pattern =</span> <span class="st">&quot;bam$&quot;</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">include.dirs =</span> <span class="cn">TRUE</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>   )</span></code></pre></div>
-<ol start="2" style="list-style-type: decimal">
-<li><p>Create a data frame that contains the coverage profiles.</p>
-<ol style="list-style-type: decimal">
-<li>Convert BAM files to a list of RLEs. You may skip this step if you
-already have converted them to RLE format.</li>
-</ol>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>cov_info <span class="ot">&lt;-</span> <span class="fu">convert_bam_to_rle</span>(<span class="at">bam_file =</span> path_to_bamfiles)</span></code></pre></div>
-<ol start="2" style="list-style-type: decimal">
-<li>Convert the RLE list to a feature-extracted data frame. In this
-step, you have the option to use the provided mappability profile and
-nucleotide filtering mode. We recommend to enable the profiling and
-filtering step as it eliminates false peaks. Examples will be provided
-in the next section. If you wish to disable this mode, simpling set
+<p><strong>Note that both training and testing data need to go through
+the conversion step.</strong> In our example, we stored the conversion
+for both the testing and training datasets in the same object. You can
+do the conversion separately for your data.</p>
+<p><strong>Important: the example code does not work unless the path to
+the folder that stores your BAM files is provided.</strong></p>
+<div id="state-the-path-to-the-folder-of-your-bam-files" class="section level3">
+<h3>2.1. State the path to the folder of your BAM files</h3>
+<p>If you already have coverage profiles in run-length encoding (RLE)
+format, go to section 2.2.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>path_to_bamfiles <span class="ot">&lt;-</span> <span class="fu">list.files</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">path =</span> <span class="st">&quot;path/to/your/BAM/files/folder&quot;</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">&quot;bam$&quot;</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">include.dirs =</span> <span class="cn">TRUE</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="create-a-data-frame-that-contains-the-coverage-profiles." class="section level3">
+<h3>2.2. Create a data frame that contains the coverage profiles.</h3>
+<div id="convert-bam-files-to-a-list-of-rles." class="section level4">
+<h4>2.2.1. Convert BAM files to a list of RLEs.</h4>
+<p>You may skip this step if you already have converted them to RLE
+format.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>example_cov <span class="ot">&lt;-</span> <span class="fu">convert_bam_to_rle</span>(<span class="at">bam_file =</span> <span class="st">&quot;path_to_bamfiles&quot;</span>)</span></code></pre></div>
+</div>
+<div id="convert-the-list-of-rles-to-a-feature-extracted-data-frame." class="section level4">
+<h4>2.2.2. Convert the list of RLEs to a feature-extracted data
+frame.</h4>
+<p>In this section, you have the option to use the provided unreliable
+regions. We recommend to enable the profiling and filtering step as it
+eliminates false peaks. Examples will be provided in section 4. If you
+wish to disable this mode, simply set
 <code>unreliable_region_enabled = FALSE</code>. If you wish to enable
-this mode, you do not need extra codes.</li>
+this mode, you do not need extra codes. If you wish to use your own
+unreliable regions, please refer to section 3 and input
+<code>unreliable_region_df</code> with the unreliable regions that you
+customized. If you would like to use the provided mappability profile,
+you do not need extra codes. Here, we enabled the mappability profile
+and nucleotide filtering mode and uses the provided mappability
+profile.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">convert_rle_to_df</span>(<span class="at">covs =</span> example_cov, <span class="at">unreliable_region_df =</span> unreliable_regions)</span></code></pre></div>
+</div>
+</div>
+</div>
+<div id="predicting-the-plant-samples" class="section level2">
+<h2>3. Predicting the plant sample(s)</h2>
+<p>To make predictions, use the converted mapping result of the
+sample(s) that you wish to detect as the input, <code>newdata</code>.
+Make sure you have converted the indexed and sorted BAM files into
+feature-extracted data frame from the section above.</p>
+<p>After preparing your test sample, you can choose to test the data
+using our provided training model or the model you trained using
+<code>train_iimi()</code>. The tutorial of training your own model is
+provided in the next section.</p>
+<p><strong>Note: if you wish to customize unreliable regions, please go
+to 3.3.</strong></p>
+<div id="using-pre-trained-models-and-no-customization" class="section level3">
+<h3>3.1 Using pre-trained models and no customization</h3>
+<p>If you wish to use provided training model, only input your data to
+<code>newdata</code> and choose a method of your wish using
+<code>predict_iimi()</code>.</p>
+<p>There are three methods that you may choose from: <code>xgb</code>,
+<code>en</code>, and <code>rf</code>, which stand for pre-trained
+XGBoost, elastic net, and random forest models. The example below uses
+the pre-trained XGBoost model.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>prediction_default <span class="ot">&lt;-</span> <span class="fu">predict_iimi</span>(<span class="at">newdata =</span> df, <span class="at">method =</span> <span class="st">&quot;xgb&quot;</span>)</span></code></pre></div>
+<p>The detection of your plant sample(s) is finished. The prediction is
+<code>TRUE</code> if virus infected the sample, <code>FALSE</code> if
+virus did not infect the sample.</p>
+</div>
+<div id="customizing-your-own-model" class="section level3">
+<h3>3.2. Customizing your own model</h3>
+<p>If you would like to train your own model and use this model to test
+your data, you can use the codes below to train a new model with your
+own data.</p>
+<p>Ideally, the number of the samples used to train the model should be
+bigger than 100. However, we are only providing a tutorial on how to use
+the <code>train_iimi()</code> function, only two samples are used to
+train the model since <code>example_cov()</code> only contains three
+in-house data’s coverage information.</p>
+<p>First, we need to prepare our training data. We are using a 80/20
+random split to split the three samples. This means that two samples are
+used as the training data, and one sample is used as the testing data.
+If you are training your own data, treat the training data as your data
+that you want to train the model on; treat the testing data as your data
+that you would like to have a prediction on.</p>
+<p>If you have separate training and testing data, you may only need to
+convert your data from mapping results (BAM files) to fetaure-extracted
+data frame and name your data as the following variables.</p>
+<p>Here are some definitions/explanation of the objects to input in
+<code>train_iimi()</code>:</p>
+<ol style="list-style-type: decimal">
+<li><p><code>train_x</code>: the feature-extracted data frame of plant
+samples that you would like to train iimi model on. Make sure that you
+have mapped the samples to the virus database and converted the mapping
+result to sorted and indexes BAM files.</p></li>
+<li><p><code>train_y</code>: the known truth or labels for your
+<code>train_x</code> data. Please label the data to make sure that it
+has a detection label for virus segments as well.</p></li>
+<li><p><code>test_x</code>: the feature-extracted data frame of plant
+samples that you would like to predict using your trained iimi model.
+Make sure that you have mapped the samples to the virus database and
+converted the mapping result to sorted and indexes BAM files.</p></li>
 </ol>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">convert_rle_to_df</span>(<span class="at">covs =</span> example_cov)</span></code></pre></div></li>
-</ol>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set seed</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># spliting into 80-20 train and test data set with the three plant samples</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>train_names <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">levels</span>(<span class="fu">as.factor</span>(df<span class="sc">$</span>sample_id)),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">length</span>(<span class="fu">unique</span>(df<span class="sc">$</span>sample_id)) <span class="sc">*</span> <span class="fl">0.8</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co"># trian data</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co"># train_x is the feature-extracted data frame of your train data</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>train_x <span class="ot">=</span> df[df<span class="sc">$</span>sample_id <span class="sc">%in%</span> train_names,]</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co"># train_y is the known truth or labels for your train_x data, indicating the presence of specific viruses in the samples</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>train_y <span class="ot">=</span> <span class="fu">c</span>()</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (ii <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(train_x)) {</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  train_y <span class="ot">=</span> <span class="fu">append</span>(train_y, example_diag[train_x<span class="sc">$</span>seg_id[ii],</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>                                         train_x<span class="sc">$</span>sample_id[ii]])</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="co"># test data</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="co"># test_x is the feature-extracted data frame of the data you would like to predict</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="co"># here we used the sample that is not in the training set for demonstration purpose</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>test_x <span class="ot">=</span> df[df<span class="sc">$</span>sample_id <span class="sc">%in%</span> train_names <span class="sc">==</span> F,]</span></code></pre></div>
+<p>Then, we plug in the variables into the <code>train_iimi</code>
+function with the default XGBoost model.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">train_iimi</span>(<span class="at">train_x =</span> train_x, <span class="at">train_y =</span> train_y)</span></code></pre></div>
+<p>Now, we have a trained model using the toy data.</p>
+<p>Then, the process to detect which viruses infect the plant sample(s)
+is the same as previously described, except we are using a customized
+trained model.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>prediction_customized <span class="ot">&lt;-</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict_iimi</span>(<span class="at">newdata =</span> test_x,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">trained_model =</span> fit)</span></code></pre></div>
+<p>The detection of the plant sample(s) is finished. The interpretation
+is the same as above.</p>
+</div>
+<div id="customizing-unreliable-regions" class="section level3">
+<h3>3.3. Customizing unreliable regions</h3>
+<p><strong>Note: if you would like to create your own unreliable
+regions, please customize them first, then extract features to build a
+data frame from section 2.2.2. using customized unreliable
+regions.</strong></p>
+<p>If you would like to create your own mappability profile and high
+nucleotide content regions besides from using your own training model,
+you may use <code>create_mappability_profile()</code> and
+<code>high_nucleotide_regions()</code>. Both functions’ output is a data
+frame with the start and end position of the unmappable region, the
+virus that the region is on, and the category that it belongs to.</p>
+<p>Mappability profile is a profile of areas on a virus genome that can
+be mapped to (1) other viruses or (2) host genome. We choose Arabidopsis
+Thaliana as our host genome.</p>
+<p>High nucleotide content regions is a profile of areas on a virus
+genome that has (1) high GC content and/or (2) high A nucleotide
+percentage.</p>
+<p>Including these two profiles into iimi ensures that there are no
+false peaks like the ones described in the previous section.</p>
+<div id="mappability-profile" class="section level4">
+<h4>3.3.1. Mappability profile</h4>
+<p>Here is a short tutorial to make mappability profile.</p>
+<p>First, split each of the virus segment from the virus database into a
+sliding window series with window size of your choice and with step size
+1. The default value for window size is 75. You may choose any window
+size you want.</p>
+<p>Then, map one virus segment with each other, until you finish mapping
+it to all virus segments in the virus database. Also map the virus
+segment with a host genome of your choice. We chose to use Arabidopsis
+Thaliana.</p>
+<p>After mapping, sort and index the resulted BAM files from the mapping
+step.</p>
+<p>Next, it is time to assemble the mappability profile:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># if you would like to keep unmappable regions that can be mapped to other viruses or the host genome separate into two data frames, you may use the following code:</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># input your own path that you would want to store regions on a virus that can be mapped to another virus</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># you can customize the name of this type of mappability profile</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>mappability_profile_virus <span class="ot">&lt;-</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create_mappability_profile</span>(<span class="st">&quot;path/to/bam/files/folder/virus&quot;</span>, <span class="at">category =</span> <span class="st">&quot;Unmappable region (virus)&quot;</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co"># input your own path that you would want to store regions on a virus that can be mapped to the host genome</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co"># you can customize the name of this type of mappability profile</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>mappability_profile_host <span class="ot">&lt;-</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create_mappability_profile</span>(<span class="st">&quot;path/to/bam/files/folder/host&quot;</span>, <span class="at">category =</span> <span class="st">&quot;Unmappable region (host)&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># if you would like to keep everything in the same data frame, you may use the following code:</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>mappability_profile <span class="ot">&lt;-</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create_mappability_profile</span>(<span class="st">&quot;path/to/bam/files/folder/of/both/types/&quot;</span>, <span class="at">category =</span> <span class="st">&quot;Unmappable region&quot;</span>)</span></code></pre></div>
+</div>
+<div id="high-nucleotide-content-regions" class="section level4">
+<h4>3.3.2. High nucleotide content regions</h4>
+<p>Creating the high nucleotide content regions is much easier than the
+mappability profile. We only need to use
+<code>create_high_nucleotide_content()</code> function.</p>
+<p>Here is an example:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>high_nucleotide_regions <span class="ot">&lt;-</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create_high_nucleotide_content</span>(<span class="at">gc =</span> <span class="fl">0.6</span>, <span class="at">a =</span> <span class="fl">0.45</span>)</span></code></pre></div>
+<p>The default threshold for GC content is 60% and is 45% for A%. The
+thresholds are customizable.</p>
+<p>You have created the mappability profile and the high nucleotide
+regions and can use them to convert your training and testing data to
+feature-extracted data frames. Please refer to section 2.2.2. to see how
+to do so.</p>
+</div>
+</div>
 </div>
 <div id="visualizing-the-coverage-profiles" class="section level2">
-<h2>Visualizing the coverage profiles</h2>
+<h2>4. Visualizing the coverage profiles</h2>
 <p>Next, we can visualize the coverage profile by using the
 <code>plot_cov()</code> function.</p>
 <ul>
@@ -435,119 +683,57 @@ window of k-mer with the step as
 <li>We used the default setting of k = 75.</li>
 </ol></li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>covs_selected <span class="ot">=</span> <span class="fu">list</span>()</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>covs_selected<span class="sc">$</span>S1 <span class="ot">&lt;-</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  example_cov<span class="sc">$</span>S1[<span class="fu">c</span>(<span class="st">&quot;4c559wtw&quot;</span>, <span class="st">&quot;2kiu3uzt&quot;</span>, <span class="st">&quot;z9hs8khm&quot;</span>, <span class="st">&quot;ka4xfvq7&quot;</span>)]</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>oldpar <span class="ot">&lt;-</span> <span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>))</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">7</span>, <span class="dv">7</span>, <span class="dv">8</span>), <span class="at">nrow =</span> <span class="dv">6</span>))</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_cov</span>(<span class="at">covs =</span> covs_selected)</span></code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(oldpar)</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>oldpar <span class="ot">&lt;-</span> <span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="do">## if you wish to plot all segments of one sample, you can try:</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># plot_cov(covs = example_cov[&quot;S1&quot;])</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="do">## if you wish to plot all segments from all samples, you can try:</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co"># plot_cov(covs = example_cov)</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="do">## if you wish to plot certain segments from one sample, you can try:</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>segs <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;42jtlrir&quot;</span>, <span class="st">&quot;m0kacxse&quot;</span>)</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>covs_selected <span class="ot">=</span> <span class="fu">list</span>()</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>covs_selected<span class="sc">$</span><span class="st">`</span><span class="at">305S</span><span class="st">`</span> <span class="ot">&lt;-</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  example_cov<span class="sc">$</span><span class="st">`</span><span class="at">305S</span><span class="st">`</span>[segs]</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="do">## if you have many segments that you would want to plot, you can try the following code with the numbers changed</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a><span class="do">## to find the index of your desired segments:</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>covs_selected<span class="sc">$</span>S1 <span class="ot">&lt;-</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>  example_cov<span class="sc">$</span>S1[<span class="fu">names</span>(example_cov<span class="sc">$</span>S1)[<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">72</span>)]]</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">4</span>), <span class="at">nrow =</span> <span class="dv">3</span>))</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_cov</span>(<span class="at">covs =</span> covs_selected)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(oldpar)</span></code></pre></div>
 <p>This gives us a general idea of what the potential viruses are.</p>
 <ul>
-<li>Plot (1) indicates that the virus segment infected the sample</li>
-<li>Plot (2) indicates that the virus segment did not infect the
-sample</li>
-<li>Plot (3) indicates that the peak in the coverage profile could be
-explained by the mappability profile</li>
-<li>Plot (4) indicates that the peak in the coverage profile could be
-explained by the high A percentage</li>
+<li>Plot (1) indicates that the mappability profile suggests there is
+areas that can be mapped to other viruses or the host</li>
+<li>Plot (2) indicates that the virus segment infected the sample</li>
 </ul>
 </div>
-<div id="predicting-the-plant-samples" class="section level2">
-<h2>Predicting the plant sample(s)</h2>
-<p>To make predictions, use the sample(s) that you wish to detect as the
-input.</p>
-<p>After preparing your test sample, you can choose to test the data
-using our provided training model or the model you trained using
-<code>train_iimi()</code>.</p>
-<p>If you wish to use provided training model:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>prediction_default <span class="ot">&lt;-</span> <span class="fu">predict_iimi</span>(<span class="at">newdata =</span> df)</span></code></pre></div>
-<p>The detection of your plant sample(s) is finished. The prediction is
-<code>TRUE</code> if virus infected the sample, <code>FALSE</code> if
-virus did not infect the sample.</p>
+<div id="references" class="section level2 unnumbered">
+<h2 class="unnumbered">5. References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-sugarbeet" class="csl-entry">
+Candresse, T, A Marais-Colombel, and V Brault. 2022. <span>“<span class="nocase">Sugar beet sequencing data (RNAseq)</span>.”</span>
+Recherche Data Gouv. <a href="https://doi.org/10.15454/MK1JIW">https://doi.org/10.15454/MK1JIW</a>.
 </div>
-<div id="training-your-own-model" class="section level2">
-<h2>Training your own model</h2>
-<p>If you would like to train your own model, you can follow the codes
-below to train a new model with your own data.</p>
-<p>Ideally, the number of the samples used to train the model should be
-bigger than 100. However, since we are only providing a tutorial on how
-to use the <code>train_iimi</code> function, only eight samples are used
-to train the model.</p>
-<p>First, we need to prepare our training data. We are using a 80/20
-split to split the six samples.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set seed</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># spliting into 80-20 train and test data set with the ten plant samples</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>train_names <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">levels</span>(<span class="fu">as.factor</span>(df<span class="sc">$</span>sample_id)),</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">length</span>(<span class="fu">unique</span>(df<span class="sc">$</span>sample_id)) <span class="sc">*</span> <span class="fl">0.8</span>)</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co"># trian data</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>train_x <span class="ot">=</span> df[df<span class="sc">$</span>sample_id <span class="sc">%in%</span> train_names, ]</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>train_y <span class="ot">=</span> <span class="fu">c</span>()</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (ii <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(train_x)) {</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  train_y <span class="ot">=</span> <span class="fu">append</span>(train_y, example_diag[train_x<span class="sc">$</span>seg_id[ii],</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>                                         train_x<span class="sc">$</span>sample_id[ii]])</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co"># test data</span></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>test_x <span class="ot">=</span> df[df<span class="sc">$</span>sample_id <span class="sc">%in%</span> train_names <span class="sc">==</span> F, ]</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>test_y <span class="ot">=</span> <span class="fu">c</span>()</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (ii <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(train_x)) {</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>  test_y <span class="ot">=</span> <span class="fu">append</span>(test_y, example_diag[train_x<span class="sc">$</span>seg_id[ii],</span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>                                       train_x<span class="sc">$</span>sample_id[ii]])</span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-<p>Then, we plug in the variables into the <code>train_iimi</code>
-function with the default XGBoost model. You may have other parameters
-in the</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">train_iimi</span>(<span class="at">train_x =</span> train_x, <span class="at">train_y =</span> train_y)</span></code></pre></div>
-<p>Now, we have a trained model using the toy data.</p>
-<p>Then, the process to detect which viruses infect the plant sample(s)
-is the same as previously described, except we are using a trained
-model.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>prediction_customized <span class="ot">&lt;-</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict_iimi</span>(<span class="at">newdata =</span> test_x,</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">trained_model =</span> fit)</span></code></pre></div>
-<p>The detection of the plant sample(s) is finished. The interpretation
-is the same as above.</p>
+<div id="ref-iimi" class="csl-entry">
+Ning, H., I. Boyes, I. Numanagić, M. Rott, L. Xing, and X. Zhang. 2024.
+<span>“Diagnostics of Viral Infections Using High-Throughput Genome
+Sequencing Data.”</span>
 </div>
-<div id="creating-mappability-profile-and-nucleotide-filtering-data-frame" class="section level2">
-<h2>Creating mappability profile and nucleotide filtering data
-frame</h2>
-<p>If you would like to create your own mappability profile and high
-nucleotide content regions, here is a short tutorial.</p>
-<p><em>For the mappability profile:</em></p>
-<p>First, split each of your virus segment into a sliding window series
-with window size of your choice and with step size 1. The default value
-for window size is 75.</p>
-<p>Then, map one virus segment with each other, until you finish mapping
-it to all virus segments in the virus database. Also map the virus
-segment with a host genome of your choice. We chose to use Arabidopsis
-Thaliana.</p>
-<p>After mapping, sort and index the resulted BAM files from the mapping
-step.</p>
-<p>Next, it is time to assemble the mappability profile.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>mappability_profile_virus <span class="ot">&lt;-</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create_mappability_profile</span>(path<span class="sc">/</span>to<span class="sc">/</span>bam<span class="sc">/</span>files<span class="sc">/</span>folder<span class="sc">/</span>virus, <span class="at">category =</span> <span class="st">&quot;Unmappable region (virus)&quot;</span>)</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>mappability_profile_host <span class="ot">&lt;-</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create_mappability_profile</span>(path<span class="sc">/</span>to<span class="sc">/</span>bam<span class="sc">/</span>files<span class="sc">/</span>folder<span class="sc">/</span>host, <span class="at">category =</span> <span class="st">&quot;Unmappable region (host)&quot;</span>)</span></code></pre></div>
-<p><em>For the high nucleotide content regions:</em></p>
-<p>Creating the high nucleotide content regions is much easier than the
-mappability profile. We only need to use
-<code>create_high_nucleotide_content()</code> function.</p>
-<p>Here is an example:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>high_nucleotide_regions <span class="ot">&lt;-</span> <span class="fu">create_high_nucleotide_content</span>()</span></code></pre></div>
-<p>The default threshold for GC content is 60% and is 45% for A%. The
-thresholds are changable.</p>
+<div id="ref-virhunter" class="csl-entry">
+Sukhorukov, G, M Khalili, O Gascuel, T Candresse, A Marais-Colombel, and
+M Nikolski. 2022. <span>“VirHunter: A Deep Learning-Based Method for
+Detection of Novel RNA Viruses in Plant Sequencing Data.”</span>
+<em>Front Bioinform</em> 2 (May). <a href="https://doi.org/10.3389/fbinf.2022.867111">https://doi.org/10.3389/fbinf.2022.867111</a>.
+</div>
+</div>
 </div>
 
 

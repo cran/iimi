@@ -65,6 +65,7 @@
 "trained_xgb"
 
 
+
 #' A trained model using the default Elastic Net settings
 #'
 #'

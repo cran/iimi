@@ -60,16 +60,14 @@ train_iimi <- function(train_x,
                        k = 5,
                        ...) {
   if (method == "rf") {
-    trained_model = randomForest(
-      x = train_x,
-      y = train_y,
-      ntree = ntree,
-      ...
-    )
+    trained_model = randomForest(x = train_x[,-c(1:4)],
+                                 y = train_y,
+                                 ntree = ntree,
+                                 ...)
   }
 
   if (method == "xgb") {
-    xgbtrain <- sparsify(data.table(train_x))
+    xgbtrain <- sparsify(data.table(train_x[,-c(1:4)]))
     xgblabel <- as.numeric(as.logical(train_y))
 
     trained_model = xgboost(
@@ -85,9 +83,9 @@ train_iimi <- function(train_x,
   }
 
   if (method == "en") {
-    train = cbind(train_y, train_x)
+    train = cbind(train_y, train_x[, -c(1:4)])
     colnames(train)[1] = "labels"
-    xx.train = model.matrix(labels ~ ., train)
+    xx.train = model.matrix(labels ~ ., train)[, -1]
     yy.train = as.numeric(as.logical(train_y))
     foldid <- createFolds(yy.train, k = k, list = F)
     trained_model <-
