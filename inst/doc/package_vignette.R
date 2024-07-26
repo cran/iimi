@@ -1,6 +1,9 @@
+## ----echo=FALSE, warning=FALSE------------------------------------------------
+library(httr)
+
 ## ----warning=FALSE, message=FALSE, eval=FALSE---------------------------------
 #  # install iimi
-#  install.packages(c("iimi", "httr"))
+#  install.packages(c("iimi", "dplyr"))
 #  
 #  # install Biostrings
 #  if (!require("BiocManager", quietly = TRUE))
@@ -13,7 +16,7 @@ library(iimi)
 
 library(Biostrings)
 
-library(httr)
+library(dplyr)
 
 ## ----eval=FALSE, warning=FALSE------------------------------------------------
 #  path_to_bamfiles <- list.files(
@@ -27,36 +30,41 @@ library(httr)
 #  example_cov <- convert_bam_to_rle(bam_file = "path_to_bamfiles")
 
 ## ----eval=FALSE, warning=FALSE------------------------------------------------
+#  # Using default settings (recommended)
+#  df <- convert_rle_to_df(example_cov)
+#  
+#  # Disabling unreliable region processing
 #  df <-
-#    convert_rle_to_df(covs = example_cov, unreliable_region_df = unreliable_regions)
+#    convert_rle_to_df(example_cov, unreliable_region_enabled = FALSE)
+#  
+#  # Using custom unreliable regions
+#  # Refer to section 3.3 for details
+#  custom_regions <- create_custom_unreliable_regions()
+#  df <-
+#    convert_rle_to_df(example_cov, unreliable_region_df = custom_regions)
 
 ## ----message=FALSE, warning=FALSE, results='hide', eval=FALSE-----------------
 #  prediction_default <- predict_iimi(newdata = df, method = "xgb")
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  # set seed
-#  set.seed(123)
+#  # preparing the train and test data
 #  
 #  # spliting into 80-20 train and test data set with the three plant samples
+#  set.seed(123)
 #  train_names <- sample(levels(as.factor(df$sample_id)),
 #                        length(unique(df$sample_id)) * 0.8)
 #  
 #  # trian data
-#  # train_x is the feature-extracted data frame of your train data
 #  train_x = df[df$sample_id %in% train_names,]
+#  # test data
+#  test_x = df[df$sample_id %in% train_names == F,]
 #  
-#  # train_y is the known truth or labels for your train_x data, indicating the presence of specific viruses in the samples
+#  # preparing labels
 #  train_y = c()
-#  
 #  for (ii in 1:nrow(train_x)) {
 #    train_y = append(train_y, example_diag[train_x$seg_id[ii],
 #                                           train_x$sample_id[ii]])
 #  }
-#  
-#  # test data
-#  # test_x is the feature-extracted data frame of the data you would like to predict
-#  # here we used the sample that is not in the training set for demonstration purpose
-#  test_x = df[df$sample_id %in% train_names == F,]
 
 ## ----message=FALSE, warning=FALSE, results='hide', eval=FALSE-----------------
 #  fit <- train_iimi(train_x = train_x, train_y = train_y)
@@ -66,21 +74,29 @@ library(httr)
 #    predict_iimi(newdata = test_x,
 #                 trained_model = fit)
 
+## -----------------------------------------------------------------------------
+# An example of the provided unreliable regions
+unreliable_regions %>% group_by(Categories) %>% sample_n(2)
+
 ## ----eval=FALSE---------------------------------------------------------------
-#  # if you would like to keep unmappable regions that can be mapped to other viruses or the host genome separate into two data frames, you may use the following code:
+#  # if you would like to keep unmappable regions that can be mapped to other
+#  # viruses or the host genome separate into two data frames, you may use the
+#  # following code:
 #  
-#  # input your own path that you would want to store regions on a virus that can be mapped to another virus
+#  # input your own path that you would want to store regions on a virus that can
+#  # be mapped to another virus
 #  # you can customize the name of this type of mappability profile
 #  mappability_profile_virus <-
 #    create_mappability_profile("path/to/bam/files/folder/virus", category = "Unmappable region (virus)")
 #  
-#  # input your own path that you would want to store regions on a virus that can be mapped to the host genome
+#  # input your own path that you would want to store regions on a virus that can
+#  # be mapped to the host genome
 #  # you can customize the name of this type of mappability profile
 #  mappability_profile_host <-
 #    create_mappability_profile("path/to/bam/files/folder/host", category = "Unmappable region (host)")
-
-## ----eval=FALSE---------------------------------------------------------------
-#  # if you would like to keep everything in the same data frame, you may use the following code:
+#  
+#  # if you would like to keep everything in the same data frame, you may use the
+#  # following code:
 #  mappability_profile <-
 #    create_mappability_profile("path/to/bam/files/folder/of/both/types/", category = "Unmappable region")
 
