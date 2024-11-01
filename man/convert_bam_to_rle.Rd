@@ -16,8 +16,8 @@ reads. \code{TRUE} if paired-end. \code{FALSE} if single-end.}
 A list of coverage profile(s) in RLE format with one or more samples.
 }
 \description{
-Converts one or more indexed and sorted BAM files into a run-
-length encodings (RLEs) list.
+Converts one or more indexed and sorted BAM files (ending in
+\verb{*.sorted.bam} and \verb{*.bai}) into a run-length encodings (RLEs) list.
 }
 \examples{
 \dontrun{

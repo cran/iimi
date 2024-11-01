@@ -36,9 +36,10 @@
 #'     `XGBoost`, or `Elastic Net` model. Default is `XGBoost` model.
 #' @param nrounds Max number of boosting iterations for `XGBoost` model. Default
 #'     is 100.
-#' @param max_depth Maximum depth of a tree in `XGBoost` model. Default is 10.
-#' @param gamma Minimum loss reduction required in `XGBoost` model. Default is 6.
+#' @param min_child_weight Default is 10.
+#' @param gamma Minimum loss reduction required in `XGBoost` model. Default is 20.
 #' @param ntree Number of trees in `Random Forest` model. Default is 100.
+#' @param mtry Default is 10.
 #' @param k Number of folds. Default is 5.
 #' @param \dots Other arguments that can be passed to \code{randomForest},
 #'     \code{xgboost}, or \code{glmnet}.
@@ -54,20 +55,24 @@ train_iimi <- function(train_x,
                        train_y,
                        method = "xgb",
                        nrounds = 100,
-                       max_depth = 10,
-                       gamma = 6,
-                       ntree = 100,
+                       min_child_weight = 10,
+                       gamma = 20,
+                       ntree = 200,
+                       mtry = 10,
                        k = 5,
                        ...) {
   if (method == "rf") {
-    trained_model = randomForest(x = train_x[,-c(1:4)],
-                                 y = train_y,
-                                 ntree = ntree,
-                                 ...)
+    trained_model = randomForest(
+      x = train_x[, -c(1:4)],
+      y = train_y,
+      ntree = ntree,
+      mtry = mtry,
+      ...
+    )
   }
 
   if (method == "xgb") {
-    xgbtrain <- sparsify(data.table(train_x[,-c(1:4)]))
+    xgbtrain <- sparsify(data.table(train_x[, -c(1:4)]))
     xgblabel <- as.numeric(as.logical(train_y))
 
     trained_model = xgboost(
@@ -75,7 +80,7 @@ train_iimi <- function(train_x,
       label = xgblabel,
       objective = "binary:logistic",
       nrounds = nrounds,
-      max_depth = max_depth,
+      min_child_weight = min_child_weight,
       gamma = gamma,
       ...
     )
@@ -83,9 +88,9 @@ train_iimi <- function(train_x,
   }
 
   if (method == "en") {
-    train = cbind(train_y, train_x[, -c(1:4)])
+    train = cbind(train_y, train_x[,-c(1:4)])
     colnames(train)[1] = "labels"
-    xx.train = model.matrix(labels ~ ., train)[, -1]
+    xx.train = model.matrix(labels ~ ., train)[,-1]
     yy.train = as.numeric(as.logical(train_y))
     foldid <- createFolds(yy.train, k = k, list = F)
     trained_model <-

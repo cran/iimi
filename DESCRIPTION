@@ -1,6 +1,6 @@
 Package: iimi
 Title: Identifying Infection with Machine Intelligence
-Version: 1.1.1
+Version: 1.2.1
 Authors@R: c(
     person("Haochen", "Ning", , "hning@uvic.ca", role = c("aut")),
     person("Ian", "Boyes", , "ian.boyes@inspection.gc.ca", role = c("aut")),
@@ -22,17 +22,16 @@ Encoding: UTF-8
 RoxygenNote: 7.3.1
 LazyData: true
 VignetteBuilder: knitr
-Imports: GenomicAlignments, IRanges, Rsamtools, data.table, mltools,
-        randomForest, xgboost, Biostrings, stats, MTPS, R.utils, caret,
-        stringr, dplyr, Rdpack
-RdMacros: Rdpack
+Imports: Biostrings, caret, data.table, dplyr, GenomicAlignments,
+        IRanges, mltools, randomForest, Rsamtools, stats, xgboost,
+        Rdpack, MTPS, R.utils, stringr
 Depends: R (>= 3.5.0)
-Suggests: testthat (>= 3.0.0), knitr, rmarkdown, httr
-Config/testthat/edition: 3
+Suggests: rmarkdown, testthat (>= 3.0.0), httr, knitr
+RdMacros: Rdpack
 License: MIT + file LICENSE
 LazyDataCompression: xz
 NeedsCompilation: no
-Packaged: 2024-07-23 16:21:16 UTC; dsain
+Packaged: 2024-11-01 05:53:46 UTC; dsain
 Author: Haochen Ning [aut],
   Ian Boyes [aut],
   Ibrahim Numanagić [aut] (<https://orcid.org/0000-0002-2970-7937>),
@@ -41,4 +40,4 @@ Author: Haochen Ning [aut],
   Xuekui Zhang [aut, cre] (<https://orcid.org/0000-0003-4728-2343>)
 Maintainer: Xuekui Zhang <xuekui@uvic.ca>
 Repository: CRAN
-Date/Publication: 2024-07-26 08:20:02 UTC
+Date/Publication: 2024-11-01 20:10:01 UTC

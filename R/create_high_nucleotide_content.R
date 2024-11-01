@@ -16,6 +16,7 @@
 #' @param a The threshold for A nucleotide. It is the proportion of A nucleotide
 #'     in a sliding window. Default is 0.45.
 #' @param window The sliding window size of your choice. Default is 75.
+#' @param virus_info A DNAStringSet of virus segments. The format should be similar to `virus_segments`.
 #'
 #' @return A data frame of the start and end positions of the regions_a that are
 #'     considered high in A% and GC%.
@@ -24,12 +25,13 @@
 create_high_nucleotide_content <-
   function(gc = 0.6,
            a = 0.45,
-           window = 75) {
+           window = 75,
+           virus_info) {
     unreliable_regions = data.frame(matrix(NA, ncol = 4, nrow = 0))
 
-    for (ii in 1:length(virus_segments)) {
-      segment <- names(virus_segments)[ii]
-      seq <- virus_segments[[segment]]
+    for (ii in 1:length(virus_info)) {
+      segment <- names(virus_info)[ii]
+      seq <- virus_info[[segment]]
       gc_seq = rowSums(letterFrequencyInSlidingView(seq, window, c("G", "C"))) /
         window
       a_seq = rowSums(letterFrequencyInSlidingView(seq, window, c("A"))) /
@@ -87,6 +89,11 @@ create_high_nucleotide_content <-
     }
 
     colnames(unreliable_regions) = c("Start", "End", "Virus segment", "Categories")
+
+    unreliable_regions$Start <- as.numeric(unreliable_regions$Start)
+    unreliable_regions$End <- as.numeric(unreliable_regions$End)
+    unreliable_regions$`Virus segment` <- as.factor(unreliable_regions$`Virus segment`)
+    unreliable_regions$Categories <- as.factor(unreliable_regions$Categories)
 
     unreliable_regions
 

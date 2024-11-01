@@ -12,7 +12,6 @@ utils::globalVariables(
     "Virus_name",
     "Segment_ID",
     "Isolate_ID",
-    "Prediction",
-    "virus_segments"
+    "Prediction"
   )
 )

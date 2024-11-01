@@ -9,6 +9,8 @@ plot_cov(
   legend_status = TRUE,
   nucleotide_status = TRUE,
   window = 75,
+  nucleotide_info_version = "1_4_0",
+  virus_info,
   ...
 )
 }
@@ -21,6 +23,11 @@ plot_cov(
 CG content. Default is \code{TRUE}.}
 
 \item{window}{The sliding window size. Default is 75.}
+
+\item{nucleotide_info_version}{The version number (character string) of the
+nucleotide information of the virus segments. Default is \verb{1_4_0}.}
+
+\item{virus_info}{A DNAStringSet of virus segments. The format should be similar to \code{virus_segments}.}
 
 \item{\dots}{Other arguments that can be passed to \code{plot},
 \code{lines}, or \code{legend}.}

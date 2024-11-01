@@ -18,6 +18,11 @@ library(Biostrings)
 
 library(dplyr)
 
+# this is the extracted DNAStringSet data from the Virtool virus database GitHub. It contains both version 1.4.0 and version 1.5.0 
+get_url <-
+  "https://github.com/virtool/iimi/blob/main/data/virus_segments.rda?raw=true"
+load(url(get_url))
+
 ## ----eval=FALSE, warning=FALSE------------------------------------------------
 #  path_to_bamfiles <- list.files(
 #    path = "path/to/your/BAM/files/folder",
@@ -87,25 +92,24 @@ unreliable_regions %>% group_by(Categories) %>% sample_n(2)
 #  # be mapped to another virus
 #  # you can customize the name of this type of mappability profile
 #  mappability_profile_virus <-
-#    create_mappability_profile("path/to/bam/files/folder/virus", category = "Unmappable region (virus)")
+#    create_mappability_profile("path/to/bam/files/folder/virus", category = "Unmappable region (virus)", virus_info = virus_segments)
 #  
 #  # input your own path that you would want to store regions on a virus that can
 #  # be mapped to the host genome
 #  # you can customize the name of this type of mappability profile
 #  mappability_profile_host <-
-#    create_mappability_profile("path/to/bam/files/folder/host", category = "Unmappable region (host)")
+#    create_mappability_profile("path/to/bam/files/folder/host", category = "Unmappable region (host)", virus_info = virus_segments)
 #  
 #  # if you would like to keep everything in the same data frame, you may use the
 #  # following code:
 #  mappability_profile <-
-#    create_mappability_profile("path/to/bam/files/folder/of/both/types/", category = "Unmappable region")
+#    create_mappability_profile("path/to/bam/files/folder/of/both/types/", category = "Unmappable region", virus_info = virus_segments)
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  high_nucleotide_regions <-
-#    create_high_nucleotide_content(gc = 0.6, a = 0.45)
+#    create_high_nucleotide_content(gc = 0.6, a = 0.45, virus_info = virus_segments)
 
 ## ----fig.width=7, fig.height=5------------------------------------------------
-
 oldpar <- par(mfrow = c(1, 2))
 
 ## if you wish to plot all segments of one sample, you can try:
@@ -115,7 +119,7 @@ oldpar <- par(mfrow = c(1, 2))
 # plot_cov(covs = example_cov)
 
 ## if you wish to plot certain segments from one sample, you can try:
-segs = c("42jtlrir", "m0kacxse")
+segs = c("82np2784", "m0kacxse")
 covs_selected = list()
 covs_selected$`305S` <-
   example_cov$`305S`[segs]
@@ -123,12 +127,12 @@ covs_selected$`305S` <-
 ## if you have many segments that you would want to plot, you can try the following code with the numbers changed
 ## to find the index of your desired segments:
 
-covs_selected$S1 <-
-  example_cov$S1[names(example_cov$S1)[c(1,72)]]
+# covs_selected$`305S` <-
+#   example_cov$`305S`[names(example_cov$`305S`)[c(8, 15)]]
 
 par(mar = c(2, 4, 1, 1))
 layout(matrix(c(1, 1, 2, 3, 3, 4), nrow = 3))
-plot_cov(covs = covs_selected)
+plot_cov(covs = covs_selected, virus_info = virus_segments)
 
 par(oldpar)
 

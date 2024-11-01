@@ -9,9 +9,10 @@ train_iimi(
   train_y,
   method = "xgb",
   nrounds = 100,
-  max_depth = 10,
-  gamma = 6,
-  ntree = 100,
+  min_child_weight = 10,
+  gamma = 20,
+  ntree = 200,
+  mtry = 10,
   k = 5,
   ...
 )
@@ -27,11 +28,13 @@ train_iimi(
 \item{nrounds}{Max number of boosting iterations for \code{XGBoost} model. Default
 is 100.}
 
-\item{max_depth}{Maximum depth of a tree in \code{XGBoost} model. Default is 10.}
+\item{min_child_weight}{Default is 10.}
 
-\item{gamma}{Minimum loss reduction required in \code{XGBoost} model. Default is 6.}
+\item{gamma}{Minimum loss reduction required in \code{XGBoost} model. Default is 20.}
 
 \item{ntree}{Number of trees in \verb{Random Forest} model. Default is 100.}
+
+\item{mtry}{Default is 10.}
 
 \item{k}{Number of folds. Default is 5.}
 

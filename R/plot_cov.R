@@ -2,6 +2,7 @@
 #'
 #' @export
 #' @importFrom graphics lines plot legend
+#' @importFrom Biostrings letterFrequencyInSlidingView
 #'
 #' @examples
 #' plot_cov(example_cov$S1)
@@ -13,8 +14,11 @@
 #' @param covs An RLE list of coverage information of one or more plant samples.
 #' @param nucleotide_status Whether display a sliding window of A percentage and
 #'     CG content. Default is `TRUE`.
+#' @param nucleotide_info_version The version number (character string) of the
+#'     nucleotide information of the virus segments. Default is `1_4_0`.
 #' @param window The sliding window size. Default is 75.
 #' @param legend_status Whether display legend. Default is `TRUE`.
+#' @param virus_info A DNAStringSet of virus segments. The format should be similar to `virus_segments`.
 #' @param \dots Other arguments that can be passed to \code{plot},
 #'     \code{lines}, or \code{legend}.
 #'
@@ -25,7 +29,15 @@ plot_cov <-
            legend_status = TRUE,
            nucleotide_status = TRUE,
            window = 75,
+           nucleotide_info_version = "1_4_0",
+           virus_info,
            ...) {
+
+    if (nucleotide_info_version == "1_4_0") {
+      nucleotide_info = nucleotide_info[which(nucleotide_info$`1_4_0` == TRUE), ]
+    } else if (nucleotide_info_version == "1_5_0") {
+      nucleotide_info = nucleotide_info[which(nucleotide_info$`1_5_0` == TRUE), ]
+    }
     for (sample in names(covs)) {
       counter = 1
 
@@ -74,12 +86,12 @@ plot_cov <-
         }
 
         if (nucleotide_status) {
-          gc <- rowSums(letterFrequencyInSlidingView(virus_segments[[seg]],
+          gc <- rowSums(letterFrequencyInSlidingView(virus_info[[seg]],
                                                      window,
                                                      c("G", "C"))) / window
 
           a <-
-            rowSums(letterFrequencyInSlidingView(virus_segments[[seg]],
+            rowSums(letterFrequencyInSlidingView(virus_info[[seg]],
                                                  window,
                                                  c("A"))) / window
 

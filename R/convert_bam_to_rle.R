@@ -17,8 +17,8 @@
 #' rles <- convert_bam_to_rle("path/to/bam/file")
 #' }
 #'
-#' @description Converts one or more indexed and sorted BAM files into a run-
-#'     length encodings (RLEs) list.
+#' @description Converts one or more indexed and sorted BAM files (ending in
+#'     `*.sorted.bam` and `*.bai`) into a run-length encodings (RLEs) list.
 #'
 #' @param bam_file path to BAM file(s).
 #' @param paired Indicate if the sequencing paired is single-end or paired-end

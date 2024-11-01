@@ -16,9 +16,9 @@ A matrix with 3 columns:
 example_diag
 }
 \description{
-A matrix containing the known truth about the diagnostics result for each
-plant sample for the example data. It records whether the sample is infected
-with a virus segment. Each column is a sample, and each row is a virus
-segment's diagnostics status for three samples.
+A matrix containing the known truth about the diagnostics result (using virus
+database version 1.4.0) for each plant sample for the example data. It
+records whether the sample is infected with a virus segment. Each column is a
+sample, and each row is a virus segment's diagnostics status for three samples.
 }
 \keyword{datasets}

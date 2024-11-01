@@ -15,6 +15,8 @@
 #'   \item{GC_percent}{The percentage of G and C nucleotides in the virus
 #'   segment (GC content)}
 #'   \item{seg_len}{The length of the virus segment}
+#'   \item{1_4_0}{The version number of the virus database}
+#'   \item{1_5_0}{The version number of the virus database}
 #'   }
 "nucleotide_info"
 
@@ -34,18 +36,14 @@
 #'   \item{End}{The end position of the region that is considered unreliable}
 #'   \item{Virus segment}{The virus segment ID}
 #'   \item{Categories}{The category that this unrelible region belong to, which
-#'   are Unmappable regions (host), Unmappable regions (virus), CG% > 60%, A% > 45%.}
+#'   are Unmappable regions (host), Unmappable regions (virus), CG% > 60%, A% > 45%}
+#'   \item{1_4_0}{The version number of the virus database}
+#'   \item{1_5_0}{The version number of the virus database}
 #' }
 
 "unreliable_regions"
 
 
-
-#' A DNAStringSet of virus segments from the Virtool virus data base (version 1.4.0)
-#'
-#'
-
-"virus_segments"
 
 
 
@@ -76,10 +74,10 @@
 
 #' Known diagnostics result of virus segments
 #'
-#' A matrix containing the known truth about the diagnostics result for each
-#' plant sample for the example data. It records whether the sample is infected
-#' with a virus segment. Each column is a sample, and each row is a virus
-#' segment's diagnostics status for three samples.
+#' A matrix containing the known truth about the diagnostics result (using virus
+#' database version 1.4.0) for each plant sample for the example data. It
+#' records whether the sample is infected with a virus segment. Each column is a
+#' sample, and each row is a virus segment's diagnostics status for three samples.
 #'
 #' @format A matrix with 3 columns:
 #' \describe{

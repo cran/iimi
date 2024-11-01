@@ -5,7 +5,7 @@
 \alias{trained_xgb}
 \title{A trained model using the default XGBoost settings}
 \format{
-An object of class \code{list} of length 2.
+An object of class \code{raw} of length 130645.
 }
 \usage{
 trained_xgb
